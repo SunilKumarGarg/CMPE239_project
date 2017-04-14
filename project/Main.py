@@ -15,7 +15,22 @@ def index():
    return render_template("index.html")
 
 @app.route('/AvgMonthTemp', methods=['POST','GET'])
-def AvgMonthTempList():           
+def AvgMonthTemp():           
+    """
+    get the list of data for specific city, country and Month
+    Data is returned as a list of list
+    Returned list contains data in this format: [ ['Year','Avg Temperature'] [year, avgTemp].......]
+    """
+    try:
+        print "City"+request.form['City']
+        p = dataFrame.getPerMonthAvgTempData(City=request.form['City'], Country=request.form['Country'], Month=request.form['Month'])
+        #p.insert(0,['Year','Avg Temperature'])
+        return dumps(p)
+    except:
+        return "error"
+
+@app.route('/AvgMonthTempWithRegression', methods=['POST','GET'])
+def AvgMonthTempWithRegression():           
     """
     get the list of data for specific city, country and Month
     Data is returned as a list of list
@@ -32,8 +47,8 @@ def AvgMonthTempList():
         return "error"
 
 
-@app.route('/AvgTempForSpecifiedMonth', methods=['POST','GET'])
-def AvgTempForSpecifiedMonth():          
+@app.route('/AvgTempForSpecifiedMonthWithRegression', methods=['POST','GET'])
+def AvgTempForSpecifiedMonthWithRegression():          
     """
     return avg temperature for specified month/year/country/city.
     returned data is in float.
