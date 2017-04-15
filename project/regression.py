@@ -17,7 +17,7 @@ class Regression(object):
         feature_train, feature_test, target_train, target_test = train_test_split(year, avgTemp, test_size=0.1, random_state=42)
         reg = linear_model.LinearRegression()
         reg.fit(feature_train[:, newaxis], target_train)
-        return (feature_train, target_train, feature_test, target_test, feature_train, reg.predict(feature_train[:, newaxis]))
+        return (feature_train, target_train, feature_test, target_test, feature_train, reg.predict(feature_train[:, newaxis]), reg.coef_, reg.intercept_)
 
     def fnLinearRegression(self, year, avgTemp, predictYear):
         feature_train, feature_test, target_train, target_test = train_test_split(year, avgTemp, test_size=0.1, random_state=42)

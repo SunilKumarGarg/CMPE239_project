@@ -23,9 +23,19 @@ def AvgMonthTemp():
     """
     try:
         print "City"+request.form['City']
-        p = dataFrame.getPerMonthAvgTempData(City=request.form['City'], Country=request.form['Country'], Month=request.form['Month'])
-        #p.insert(0,['Year','Avg Temperature'])
-        return dumps(p)
+        p = dataFrame.getPerMonthAvgTempData(City=request.form['City'], Country=request.form['Country'], Month=request.form['Month'], numberOfItems=request.form["NumberOfYears"])
+
+        l = []
+        pList = np.array(p)
+        for attr in [0,1]:
+            pp = pList[ : ,attr]            
+            l.append(pp)
+
+        yearList, avgTempList = dataFrame.SplitYearAvgTemp( l )
+        avgTempList = np.array(avgTempList).astype(np.float)
+        yearList = np.array(yearList).astype(np.float)
+        training_x, training_y, test_x, test_y, predictLine_x, predictLine_y, cofficient, intercept = regression.fnLinearRegression1(yearList, avgTempList)
+        return dumps({"data":p, "cofficient":cofficient, "intercept":intercept})
     except:
         return "error"
 
@@ -41,8 +51,8 @@ def AvgMonthTempWithRegression():
         yearList, avgTempList = dataFrame.SplitYearAvgTemp( p )
         avgTempList = np.array(avgTempList).astype(np.float)
         yearList = np.array(yearList).astype(np.float)
-        training_x, training_y, test_x, test_y, predictLine_x, predictLine_y = regression.fnLinearRegression1(yearList, avgTempList)
-        return dumps({"training_x":training_x, "training_y":training_y, "test_x":test_x, "test_y":test_y, "predictLine_x":predictLine_x, "predictLine_y":predictLine_y})
+        training_x, training_y, test_x, test_y, predictLine_x, predictLine_y, cofficient, intercept = regression.fnLinearRegression1(yearList, avgTempList)
+        return dumps({"training_x":training_x, "training_y":training_y, "test_x":test_x, "test_y":test_y, "predictLine_x":predictLine_x, "predictLine_y":predictLine_y, "cofficient":cofficient, "intercept":intercept})
     except:
         return "error"
 

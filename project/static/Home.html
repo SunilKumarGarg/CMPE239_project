@@ -35,7 +35,8 @@
             <div class="collapse navbar-collapse navbar-ex1-collapse">
                 <ul class="nav navbar-nav side-nav">                    
                     <li>
-                        
+                        <a href='Home.html'>Weather Analysis</a>
+                        <a href="Temperature.html">Temperature</a>
                     </li>                    					
                 </ul>
             </div>
@@ -48,13 +49,28 @@
                   <div id="Regression" style="width: 900px; height: 500px;"></div>                  
                 </div>  
 
+                <div class="container-fluid">
                 <form ng-submit="getCityAvgTempData()" ng-controller="DataController">
-                  Enter Details:
-                  <input type="text" ng-model="City" name="City" />
-                  <input type="text" ng-model="Country" name="Country" />
-                  <input type="text" ng-model="Month" name="Month" />
+                  Enter Details:</br>
+                  <input type="text" ng-model="City" name="City" /></br>
+                  <input type="text" ng-model="Country" name="Country" /></br>
+                  <input type="text" ng-model="Month" name="Month" /></br>
+                  <input type="text" ng-model="NumberOfYears" name="NumberOfYears" /></br>
                   <input type="submit" id="submit" value="Submit" />
               </form>
+              </div>
+
+              <div class="container-fluid">
+              <form ng-submit="getPredictedTemp()" ng-controller="DataController">
+                  Predict Temperature:</br>
+                  <input type="text" ng-model="PredictedTemp" name="Result" /></br>
+                  <input type="text" ng-model="Year" name="Year" /></br>
+                  <input type="submit" id="submit" value="Submit" />
+              </form>
+              </div>
+              <div class="container-fluid" ng-controller="DataController">                
+                {{Coefficient}}
+              </div>
             </div>
             <!-- /.container-fluid -->
         </div>

@@ -6,16 +6,29 @@ google.setOnLoadCallback(function() {
     angular.bootstrap(document.body, ['WeatherAnalysis']);
 });
 
-var app = angular.module('WeatherAnalysis',[]);
+var app = angular.module('WeatherAnalysis',['ngRoute']);
 
+app.config(function($routeProvider){
+  $routeProvider  
+  
+  .when('/Analysis',{
+    templateUrl : '/static/Home.html',
+    controller : 'DataController'
+  })
+  
+  .otherwise({redirectTo: '/'})
+});
 
 app.controller('DataController', function($scope, Service , $timeout) {
       
 
-      $scope.CityAvgTempData=[[ 8,12], [ 4,5.5],[ 11,14],[ 4,5],[ 3,3.5],[ 6.5,7]]  
+      $scope.CityAvgTempData=[[ 8,12], [ 4,5.5],[ 11,14],[ 4,5],[ 3,3.5],[ 6.5,7]] 
+      $scope.PredictedTemp = "" 
       $scope.City = "Delhi"
       $scope.Country = "India"
       $scope.Month = 1
+      $scope.Year = ""
+      $scope.NumberOfYears = 50
 
       
 
@@ -42,20 +55,28 @@ app.controller('DataController', function($scope, Service , $timeout) {
             $scope.chart = new google.visualization.ScatterChart(document.getElementById('Regression'));
             $scope.chart.draw(data, options);
 
+            $scope.Coefficient = Service.Coefficient()
+            $scope.Intercept = Service.Intercept()
+
+      }),
+      
+      $scope.$watch( Service.PredictedTemp, function (PredictedTemp ) 
+      {
+        $scope.PredictedTemp = Service.PredictedTemp();
       });
       
+
+    $scope.getPredictedTemp = function()
+    {      
+      Service.getPredictedTemp($scope.City, $scope.Country, $scope.Month, $scope.Year);
+    } 
 
     $scope.getCityAvgTempData = function()
     {
       
-      Service.getCityAvgTempData($scope.City, $scope.Country, $scope.Month);
+      Service.getCityAvgTempData($scope.City, $scope.Country, $scope.Month, $scope.NumberOfYears);
     }
 
-    $scope.returnCityAvgTempData = function()
-    {
-      return CityAvgTempData
-    }
-      
   });
   
 
@@ -65,12 +86,14 @@ app.controller('DataController', function($scope, Service , $timeout) {
   app.factory( 'Service', function($http) { 
 
   var CityAvgTempData=[[ 8,12], [ 4,5.5],[ 11,14],[ 4,5],[ 3,3.5],[ 6.5,7]]
-
+  var PredictedTemp = ""
+  var Coefficient = ""
+  var Intercept = ""
   
 
   return {
 
-      getCityAvgTempData: function(City, Country, Month)
+      getCityAvgTempData: function(City, Country, Month, NumberOfYears)
         {
           $http({
               method  : 'POST',
@@ -82,9 +105,12 @@ app.controller('DataController', function($scope, Service , $timeout) {
                   str.push(encodeURIComponent(p) + "=" + encodeURIComponent(obj[p]));
                   return str.join("&");
               },
-              data: {"City": City, "Country" : Country, "Month":Month}
+              data: {"City": City, "Country" : Country, "Month":Month, "NumberOfYears":NumberOfYears}
           }).success(function(data) {
-                  CityAvgTempData = data;
+                  console.log(data)
+                  CityAvgTempData = data.data;
+                  Coefficient = data.cofficient;
+                  Intercept = data.intercept;
                 })
               .error(function(data) {
                     alert("Server has some problem. Please try after sometime.");
@@ -94,7 +120,45 @@ app.controller('DataController', function($scope, Service , $timeout) {
         CityAvgTempData:function()
         {
           return CityAvgTempData;
-        },      
+        }, 
+
+        Coefficient:function()
+        {
+          return Coefficient;
+        },
+
+        Intercept:function()
+        {
+          return Intercept;
+        }, 
+
+
+        getPredictedTemp: function(City, Country, Month, Year)
+        {
+          $http({
+              method  : 'POST',
+              url     : 'http://127.0.0.1:5000/AvgTempForSpecifiedMonthWithRegression',
+              headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+              transformRequest: function(obj) {
+                  var str = [];
+                  for(var p in obj)
+                  str.push(encodeURIComponent(p) + "=" + encodeURIComponent(obj[p]));
+                  return str.join("&");
+              },
+              data: {"City": City, "Country" : Country, "Month":Month, "Year":Year}
+          }).success(function(data) {
+                  
+                  PredictedTemp = data.avgTemp                  
+                })
+              .error(function(data) {
+                    alert("Server has some problem. Please try after sometime.");
+                });
+        },
+
+        PredictedTemp:function()
+        {
+          return PredictedTemp;
+        },    
       };
 });
 
