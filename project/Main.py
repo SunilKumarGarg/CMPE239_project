@@ -3,6 +3,7 @@ from flask import Flask, render_template, request
 from bson.json_util import dumps
 from Data_parser import DataParser, ListAttribute
 from regression import Regression
+from classification import Classification
 import numpy as np
 from numpy import newaxis
 
@@ -13,6 +14,37 @@ app = Flask(__name__)
 @app.route("/")
 def index():
    return render_template("index.html")
+
+@app.route('/TemperaturePredictionForCoordinates', methods=['POST','GET'])
+def TemperaturePredictionForCoordinates():           
+    """
+    For any longitude, Latitude, it predicts wheather temperature is hot, medium or cold.
+    Returned list contains data in this format: [[list of coordinates][list of temperature class][predicted class][score in percentage]]
+    """
+    try:
+        pCoordinate, pAvgTemp = dataFrame.getAvgTempForMonthYear(Month=request.form['Month'], Year=request.form['Year'])
+        pred, score = classification.avgTempPredectionBasedOnCoordinates(pAvgTemp, pCoordinate, request.form['Latitude'],request.form['Longitude'])
+        return dumps({"pred":pred, "score":score})
+    except:
+        return "error"
+
+@app.route('/TemperatureClassificationForCoordinates', methods=['POST','GET'])
+def TemperatureClassificationForCoordinates():           
+    """
+    For any longitude, Latitude, it predicts wheather temperature is hot, medium or cold.
+    Returned list contains data in this format: [[list of coordinates][list of temperature class]]
+    """
+    try:
+        pCoordinate, pAvgTemp = dataFrame.getAvgTempForMonthYear(Month=request.form['Month'], Year=request.form['Year'])
+        print "Done1"
+        print pCoordinate
+        print pAvgTemp
+        pCoordinate, TempClassification = classification.avgTempClassificationOnCoordinates(pAvgTemp, pCoordinate)
+        print "Done2"
+        return dumps({"coordinates":pCoordinate, "Temp_Class":TempClassification})
+    except:
+        return "error"
+        
 
 @app.route('/AvgMonthTemp', methods=['POST','GET'])
 def AvgMonthTemp():           
@@ -107,6 +139,8 @@ def AvgTempForSpecifiedMonthWithRegression():
 if __name__ == '__main__':    
     global dataFrame
     global regression
+    global classification
     dataFrame = DataParser()    
     regression = Regression()
+    classification = Classification()
     app.run()
