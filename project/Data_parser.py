@@ -37,12 +37,8 @@ class DataParser(object):
         return list of coordinates and list of avg temperature
         """
         p = df.filter(df['dt'].rlike(str(Year).zfill(4)+"-"+str(Month).zfill(2)+"-"+"[.digit.]*"))
-        print "Done22"
-        pCoordinate = p.rdd.map(lambda x: [float(x[5][:-1]), float(x[6][:-1])]).collect()
-        print "done333"
+        pCoordinate = p.rdd.map(lambda x: [float(x[5][:-1])*-1 if x[5][-1] == 'S' else float(x[5][:-1]), float(x[6][:-1])*-1 if x[6][-1] == 'W' else float(x[6][:-1])]).collect()
         pAvgTemp = p.rdd.map(lambda x: float(x[1])).collect()
-        print "Done444"
-
         return (pCoordinate, pAvgTemp)
     
 

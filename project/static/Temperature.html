@@ -5,7 +5,9 @@
       /* Always set the map height explicitly to define the size of the div
        * element that contains the map. */
       #map {
-        height: 100%;
+        height: 60%;
+        width: 60%;
+        left: 500px
       }
       /* Optional: Makes the sample page fill the window. */
       html, body {
@@ -17,51 +19,72 @@
   </head>
   <script type="text/javascript" src="http://code.angularjs.org/1.1.0/angular.min.js"></script>
   <script type="text/javascript" src="http://www.google.com/jsapi"></script>
-  <script type='text/javascript' src="js/app.js">    
-    
+  <script src="js/jquery.js"></script>
+  
+  <script>
 
-    google.setOnLoadCallback(function() {
-        angular.bootstrap(document.body, ['WeatherAnalysis']);
-    });
+      var map;
+      var Temp=[];
+      var Coord = [];
+      var p = [];
 
-  </script>
-  <body ng-controller = 'DataController'>
+      function getCoordinateClusterData() 
+      {
+        
+        $.post("http://127.0.0.1:5000/TemperatureClassificationForCoordinates", "Month=6"+"&Year=2010")
+          .then(function successCallback(response) 
+          { 
+              var pp = JSON.parse(response)
+              Temp = pp.Temp_Class;		
+              Coord = pp.coordinates;       
+              p = JSON.stringify(Coord)
+              //console.log(p);
+              initMap()       
+          });
+          
+      }
+    </script>
+  <body onload="getCoordinateClusterData()">
     <div id="map"></div>
     <script>
       var map;
       function initMap() {
         map = new google.maps.Map(document.getElementById('map'), {
           zoom: 2,
-          center: {lat: -33.865427, lng: 151.196123},
+          center: {lat: 37.090, lng: -95.712},
           mapTypeId: 'terrain'
         });
+        
 
-        // Create a <script> tag and set the USGS URL as the source.
-        var script = document.createElement('script');
+        for (var index = 0; index < Coord.length; index++) {
+          var element = Coord[index];
+          var t = Temp[index]
 
-        // This example uses a local copy of the GeoJSON stored at
-        // http://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/2.5_week.geojsonp
-        script.src = 'https://developers.google.com/maps/documentation/javascript/examples/json/earthquake_GeoJSONP.js';
-        document.getElementsByTagName('head')[0].appendChild(script);
+          var color = '#FF0000' //Red
+          if(t == 'Cold_Temperature')
+          {
+            color = '#9966FF' //Blue
+          }
+          else if(t == 'Medium_Temperature')
+          {
+            color = '#99FF00' //Yellow
+          }
 
-        map.data.setStyle(function(feature) {
-          var magnitude = feature.getProperty('mag');
-          return {
-            icon: getCircle(magnitude)
-          };
-        });
+          var cityCircle = new google.maps.Circle({
+            strokeColor: color,
+            strokeOpacity: 0.8,
+            strokeWeight: 2,
+            fillColor: color,
+            fillOpacity: 0.35,
+            map: map,
+            center: {lat: element[0], lng: element[1]},
+            radius: 100000
+          });
+
+        }
       }
 
-      function getCircle(magnitude) {
-        return {
-          path: google.maps.SymbolPath.CIRCLE,
-          fillColor: 'red',
-          fillOpacity: .2,
-          scale: Math.pow(2, magnitude) / 2,
-          strokeColor: 'white',
-          strokeWeight: .5
-        };
-      }
+      
 
       function eqfeed_callback(results) {
           console.log(results)
