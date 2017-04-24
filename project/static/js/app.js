@@ -29,9 +29,12 @@ app.controller('ClusterDataController', function($scope, ClusterService , $timeo
   
   $scope.temp=[];
   $scope.Coord = [];
-  $scope.Month=""
-  $scope.Year=""
+  $scope.Month=1
+  $scope.Year=2010
   $scope.MonthList = { January: 1, Feb:2, March:3, April:4, May:5, June:6, July:7, August:8, September:9, October:10, November:11, December:12}
+  $scope.ListOfCity = []
+  $scope.ListOfCountry = []
+  $scope.ListOfYear = []
 
   $scope.map = new google.maps.Map(document.getElementById('map'), {
         zoom: 2,
@@ -39,14 +42,30 @@ app.controller('ClusterDataController', function($scope, ClusterService , $timeo
         mapTypeId: 'terrain'
       });
 
-  console.log($scope.map);
+  
+
+
+  $scope.$watch( ClusterService.ListOfCity, function () 
+  {
+    $scope.ListOfCity = ClusterService.ListOfCity();
+  });
+
+  $scope.$watch( ClusterService.ListOfCountry, function () 
+  {
+    $scope.ListOfCountry = ClusterService.ListOfCountry();
+  });
+
+  $scope.$watch( ClusterService.ListOfYear, function () 
+  {
+    $scope.ListOfYear = ClusterService.ListOfYear();
+  });
 
   $scope.$watch( ClusterService.temp, function () 
   {
     $scope.temp = ClusterService.temp();
     $scope.Coord = ClusterService.Coord();
 
-    console.log("this is watch");   
+    
 
     
     for (var index = 0; index < $scope.Coord.length; index++) {
@@ -78,6 +97,11 @@ app.controller('ClusterDataController', function($scope, ClusterService , $timeo
 
   });
 
+  $scope.getListofCountryCity = function()
+  {
+      ClusterService.getListofCountryCity();
+  }
+
   $scope.getCoordinateClusterData = function(){
     ClusterService.getCoordinateClusterData($scope.Year, $scope.Month)
   }
@@ -89,9 +113,28 @@ app.factory( 'ClusterService', function($http) {
   var map
   var temp = []
   var Coord = []
-  
+  var ListOfCity = []
+  var ListOfCountry = []
+  var ListOfYear = []
 
   return {
+
+      getListofCountryCity: function()
+      {
+        $http.get("http://127.0.0.1:5000/ListofCountryCity").then(function successCallback(response) 
+          { 
+            
+            ListOfCity = response.data.city;
+            ListOfCountry = response.data.country;
+            ListOfYear = response.data.year;
+
+            console.log(response);
+            
+            }, function successCallback(response) 
+            {
+              alert("Server has some problem. Please try after sometime.");
+            })
+      },
 
       getCoordinateClusterData: function(Year,Month)
         {
@@ -107,7 +150,7 @@ app.factory( 'ClusterService', function($http) {
               },
               data: {"Month": Month, "Year" : Year}
           }).success(function(data) {
-                  console.log(data)
+                  
                   temp = data.Temp_Class;		
                   Coord = data.coordinates;
                 })
@@ -126,6 +169,21 @@ app.factory( 'ClusterService', function($http) {
         Coord:function()
         {
           return Coord;
+        },
+
+        ListOfCity:function()
+        {
+          return ListOfCity;
+        },
+
+        ListOfCountry:function()
+        {
+          return ListOfCountry;
+        },
+
+        ListOfYear:function()
+        {
+          return ListOfYear;
         },
                 
       };
@@ -233,13 +291,11 @@ app.controller('RegressionDataController', function($scope, RegressionService , 
       $scope.$watch( RegressionService.ListOfCountry, function () 
       {
         $scope.ListOfCountry = RegressionService.ListOfCountry();
-        console.log($scope.ListOfCountry)
       });
 
       $scope.$watch( RegressionService.ListOfYear, function () 
       {
         $scope.ListOfYear = RegressionService.ListOfYear();
-        console.log($scope.ListOfYear)
       });
       
 
@@ -309,7 +365,6 @@ app.controller('RegressionDataController', function($scope, RegressionService , 
               },
               data: {"City": City, "Country" : Country, "Month":Month, "NumberOfYears":NumberOfYears}
           }).success(function(data) {
-                  console.log(data)
                   CityAvgTempData = data.data;
                   Coefficient = data.cofficient;
                   Intercept = data.intercept;
