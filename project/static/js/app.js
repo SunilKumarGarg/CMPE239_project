@@ -31,6 +31,7 @@ app.controller('ClusterDataController', function($scope, ClusterService , $timeo
   $scope.Coord = [];
   $scope.Month=""
   $scope.Year=""
+  $scope.MonthList = { January: 1, Feb:2, March:3, April:4, May:5, June:6, July:7, August:8, September:9, October:10, November:11, December:12}
 
   $scope.map = new google.maps.Map(document.getElementById('map'), {
         zoom: 2,
@@ -182,7 +183,13 @@ app.controller('RegressionDataController', function($scope, RegressionService , 
       $scope.Country = "India"
       $scope.Month = 1
       $scope.Year = ""
-      $scope.NumberOfYears = 50
+      $scope.NumberOfYears = 100
+
+      $scope.MonthList = { January: 1, Feb:2, March:3, April:4, May:5, June:6, July:7, August:8, September:9, October:10, November:11, December:12}
+      $scope.ListOfCity = []
+      $scope.ListOfCountry = []
+      $scope.ListOfYear = []
+
 
       $scope.chart = new google.visualization.ScatterChart(document.getElementById('Regression'));     
       
@@ -217,6 +224,23 @@ app.controller('RegressionDataController', function($scope, RegressionService , 
       {
         $scope.PredictedTemp = RegressionService.PredictedTemp();
       });
+
+      $scope.$watch( RegressionService.ListOfCity, function () 
+      {
+        $scope.ListOfCity = RegressionService.ListOfCity();
+      });
+
+      $scope.$watch( RegressionService.ListOfCountry, function () 
+      {
+        $scope.ListOfCountry = RegressionService.ListOfCountry();
+        console.log($scope.ListOfCountry)
+      });
+
+      $scope.$watch( RegressionService.ListOfYear, function () 
+      {
+        $scope.ListOfYear = RegressionService.ListOfYear();
+        console.log($scope.ListOfYear)
+      });
       
 
     $scope.getPredictedTemp = function()
@@ -225,9 +249,13 @@ app.controller('RegressionDataController', function($scope, RegressionService , 
     } 
 
     $scope.getCityAvgTempData = function()
-    {
-      
+    {      
       RegressionService.getCityAvgTempData($scope.City, $scope.Country, $scope.Month, $scope.NumberOfYears);
+    }
+
+    $scope.getListofCountryCity = function()
+    {
+        RegressionService.getListofCountryCity();
     }
 
   });
@@ -242,9 +270,30 @@ app.controller('RegressionDataController', function($scope, RegressionService , 
   var PredictedTemp = ""
   var Coefficient = ""
   var Intercept = ""
+
+  var ListOfCity = []
+  var ListOfCountry = []
+  var ListOfYear = []
   
 
   return {
+
+      getListofCountryCity: function()
+      {
+        $http.get("http://127.0.0.1:5000/ListofCountryCity").then(function successCallback(response) 
+          { 
+            
+            ListOfCity = response.data.city;
+            ListOfCountry = response.data.country;
+            ListOfYear = response.data.year;
+
+            
+            
+            }, function successCallback(response) 
+            {
+              alert("Server has some problem. Please try after sometime.");
+            })
+      },
 
       getCityAvgTempData: function(City, Country, Month, NumberOfYears)
         {
@@ -268,6 +317,21 @@ app.controller('RegressionDataController', function($scope, RegressionService , 
               .error(function(data) {
                     alert("Server has some problem. Please try after sometime.");
                 });
+        },
+
+        ListOfCity:function()
+        {
+          return ListOfCity;
+        },
+
+        ListOfCountry:function()
+        {
+          return ListOfCountry;
+        },
+
+        ListOfYear:function()
+        {
+          return ListOfYear;
         },
 
         CityAvgTempData:function()
@@ -301,7 +365,7 @@ app.controller('RegressionDataController', function($scope, RegressionService , 
               data: {"City": City, "Country" : Country, "Month":Month, "Year":Year}
           }).success(function(data) {
                   
-                  PredictedTemp = data.avgTemp                  
+                  PredictedTemp = data                  
                 })
               .error(function(data) {
                     alert("Server has some problem. Please try after sometime.");

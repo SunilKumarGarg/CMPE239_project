@@ -15,6 +15,14 @@ app = Flask(__name__)
 def index():
    return render_template("index.html")
 
+@app.route('/ListofCountryCity', methods=['POST','GET'])
+def ListofCountryCity():
+    try:
+        country, city, year  = dataFrame.getListOfCountryCity();
+        return dumps({"country":country, "city":city, "year":year})
+    except:
+        return "error"
+
 @app.route('/TemperaturePredictionForCoordinates', methods=['POST','GET'])
 def TemperaturePredictionForCoordinates():           
     """

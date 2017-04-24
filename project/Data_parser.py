@@ -31,6 +31,14 @@ class DataParser(object):
 
         #Remove the data for which there is no Average temperature
         df = df.filter(df['AverageTemperature'].rlike("[+-]?(\d+(\.\d*)?|\.\d+)([eE][+-]?\d+)?"))
+        self.city = df.rdd.map(lambda x: x[3]).collect()
+        self.country = df.rdd.map(lambda x: x[4]).collect()
+        self.year = df.rdd.map(lambda x: int(x[0][:4])).collect()
+
+        
+
+    def getListOfCountryCity(self):
+        return (list(set(self.country)), list(set(self.city)), list(set(self.year)))
     
     def getAvgTempForMonthYear(self, Month, Year):
         """

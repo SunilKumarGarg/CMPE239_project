@@ -22,10 +22,10 @@
   <body>
     <form ng-submit="getCoordinateClusterData()" ng-controller="ClusterDataController">
         <input type="text" ng-model="Year" name="Year" /></br>
-        <input type="text" ng-model="Month" name="Month" /></br>
+        <select ng-model="Month" ng-options="x for (x, y) in MonthList"></select></br>
         <input type="submit" id="submit" value="Submit" />
     </form>
-    <div ng-controller = 'ClusterDataController' id="map" style="width: 900px; height: 500px;">
+    <div ng-controller = 'ClusterDataController' id="map" style="width: 900px; height: 500px;" ng-init="getListofCountryCity()>
       
     </div>    
   </body>
