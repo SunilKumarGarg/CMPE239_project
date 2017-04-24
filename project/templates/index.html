@@ -5,9 +5,24 @@
     <link href= {{ url_for('static',filename='css/bootstrap.min.css') }} rel="stylesheet" type="text/css">
     <link href= {{ url_for('static',filename='css/sb-admin.css') }} rel="stylesheet" type="text/css">
     <link href= {{ url_for('static',filename="font-awesome/css/font-awesome.min.css" ) }} rel="stylesheet" type="text/css">   
+
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.5/angular.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.5/angular-route.min.js"></script>
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBaLJJgSkTSvmJP_QTZsI0iMD_Gm_Khtc0"></script>
+    <script type="text/javascript" src="http://www.google.com/jsapi"></script>
+    <script type="text/javascript" src={{ url_for('static',filename="js/app.js" ) }}>
+
+    
+    
+    </script>
     
 
 </head>
+
+<script>
+    
+</script>
+
 <body>
 	
 	<div id="wrapper">
@@ -28,16 +43,15 @@
             <div class="collapse navbar-collapse navbar-ex1-collapse">
                 <ul class="nav navbar-nav side-nav">                    
                     <li>
-                        <a href={{ url_for('static',filename='Home.html') }}>Weather Analysis</a>
-                        <a href={{ url_for('static',filename='Temperature.html') }}>Coordinate Analysis</a>
+                        <a href="#Regression">Regression</a>
+                        <a href="#Clustering">Clustering</a>
                     </li>                    					
                 </ul>
             </div>
             <!-- /.navbar-collapse -->
         </nav>
         <div id="page-wrapper">
-            <div class="container-fluid">
-            </div>
+            <div ng-view />
             <!-- /.container-fluid -->
         </div>
         <!-- /#page-wrapper -->
@@ -50,11 +64,6 @@
 
 <!-- Bootstrap Core JavaScript -->
 <script src={{ url_for('static',filename="js/bootstrap.min.js" ) }}></script>
-<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.7/angular.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.5.7/angular-route.min.js"></script>
-
-<script type="text/javascript" src="http://code.angularjs.org/1.1.0/angular.min.js"></script>
-<script type="text/javascript" src="http://www.google.com/jsapi?ext.js"></script>
 
 
 	

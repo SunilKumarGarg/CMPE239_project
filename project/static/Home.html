@@ -8,49 +8,19 @@
   </head>
   <script type="text/javascript" src="http://code.angularjs.org/1.1.0/angular.min.js"></script>
   <script type="text/javascript" src="http://www.google.com/jsapi"></script>
-  <script type='text/javascript' src="js/app.js">    
-    
-
-    google.setOnLoadCallback(function() {
-        angular.bootstrap(document.body, ['WeatherAnalysis']);
-    });
 
   </script>
   <body> 
-    <div id="wrapper">
-        <!-- Navigation -->
-        <nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">
-            <!-- Brand and toggle get grouped for better mobile display -->
-            <div class="navbar-header">
-                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-ex1-collapse">
-                    <span class="sr-only">Toggle navigation</span>
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                </button>
-                <a class="navbar-brand" href={{ url_for('static',filename='Home.html') }}>Weather Analysis</a>
-            </div>
-            
-            <!-- Sidebar Menu Items - These collapse to the responsive navigation menu on small screens -->
-            <div class="collapse navbar-collapse navbar-ex1-collapse">
-                <ul class="nav navbar-nav side-nav">                    
-                    <li>
-                        <a href='Home.html'>Weather Analysis</a>
-                        <a href="Temperature.html">Coordinate Analysis</a>
-                    </li>                    					
-                </ul>
-            </div>
-            <!-- /.navbar-collapse -->
-        </nav>
+    <div id="wrapper">        
         <div id="page-wrapper">
             <div class="container-fluid">
                 <!-- /.row -->
-                <div ng-controller = 'DataController' ng-init="getCityAvgTempData()">
+                <div ng-controller = 'RegressionDataController' ng-init="getCityAvgTempData()">
                   <div id="Regression" style="width: 900px; height: 500px;"></div>                  
                 </div>  
 
                 <div class="container-fluid">
-                <form ng-submit="getCityAvgTempData()" ng-controller="DataController">
+                <form ng-submit="getCityAvgTempData()" ng-controller="RegressionDataController">
                   Enter Details:</br>
                   <input type="text" ng-model="City" name="City" /></br>
                   <input type="text" ng-model="Country" name="Country" /></br>
@@ -61,14 +31,14 @@
               </div>
 
               <div class="container-fluid">
-              <form ng-submit="getPredictedTemp()" ng-controller="DataController">
+              <form ng-submit="getPredictedTemp()" ng-controller="RegressionDataController">
                   Predict Temperature:</br>
                   <input type="text" ng-model="PredictedTemp" name="Result" /></br>
                   <input type="text" ng-model="Year" name="Year" /></br>
                   <input type="submit" id="submit" value="Submit" />
               </form>
               </div>
-              <div class="container-fluid" ng-controller="DataController">                
+              <div class="container-fluid" ng-controller="RegressionDataController">                
                 {{Coefficient}}
               </div>
             </div>
