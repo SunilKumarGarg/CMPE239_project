@@ -27,7 +27,7 @@ class DataParser(object):
         sqlContext = SQLContext(sc)
         
         global df
-        df = sqlContext.read.format("com.databricks.spark.csv").option("header", "true").load("project/CMPE239_project/Data/GlobalLandTemperaturesByCity.csv")
+        df = sqlContext.read.format("com.databricks.spark.csv").option("header", "true").load("Data/GlobalLandTemperaturesByCity.csv")
 
         #Remove the data for which there is no Average temperature
         df = df.filter(df['AverageTemperature'].rlike("[+-]?(\d+(\.\d*)?|\.\d+)([eE][+-]?\d+)?"))

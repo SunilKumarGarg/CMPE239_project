@@ -20,6 +20,11 @@ app.config(function($routeProvider){
     templateUrl : '/static/Temperature.html',
     controller : 'ClusterDataController'
   })
+
+  .when('/Visualization',{
+    templateUrl : '/static/Visualization.html',
+    controller : 'RegressionDataController'
+  })
   
   .otherwise({redirectTo: '/'})
 });
@@ -35,6 +40,9 @@ app.controller('ClusterDataController', function($scope, ClusterService , $timeo
   $scope.ListOfCity = []
   $scope.ListOfCountry = []
   $scope.ListOfYear = []
+  $scope.CoordPredictedTempClass=""
+  $scope.Latitude = 100
+  $scope.Longitude = 100
 
   $scope.map = new google.maps.Map(document.getElementById('map'), {
         zoom: 2,
@@ -60,17 +68,27 @@ app.controller('ClusterDataController', function($scope, ClusterService , $timeo
     $scope.ListOfYear = ClusterService.ListOfYear();
   });
 
+  $scope.$watch( ClusterService.CoordPredictedTempClass, function () 
+  {    
+    $scope.CoordPredictedTempClass = ClusterService.CoordPredictedTempClass();
+  });
+
+  
+
   $scope.$watch( ClusterService.temp, function () 
-  {
+  {    
+
     $scope.temp = ClusterService.temp();
     $scope.Coord = ClusterService.Coord();
 
-    
-
+    $scope.cityCircle = null
     
     for (var index = 0; index < $scope.Coord.length; index++) {
           var element = $scope.Coord[index];
           var t = $scope.temp[index]
+
+          if ($scope.cityCircle != null)
+            delete($scope.cityCircle)
 
           var color = '#FF0000' //Red
           if(t == 'Cold_Temperature')
@@ -82,7 +100,7 @@ app.controller('ClusterDataController', function($scope, ClusterService , $timeo
             color = '#99FF00' //Yellow
           }
 
-          var cityCircle = new google.maps.Circle({
+          $scope.cityCircle = new google.maps.Circle({
             strokeColor: color,
             strokeOpacity: 0.8,
             strokeWeight: 2,
@@ -105,6 +123,11 @@ app.controller('ClusterDataController', function($scope, ClusterService , $timeo
   $scope.getCoordinateClusterData = function(){
     ClusterService.getCoordinateClusterData($scope.Year, $scope.Month)
   }
+
+  $scope.getCoordinateTemperaturePrediction = function(){
+    $scope.CoordPredictedTempClass=""
+    ClusterService.getCoordinateTemperaturePrediction($scope.Year, $scope.Month, $scope.Longitude, $scope.Latitude)
+  }
 });
 
 
@@ -116,6 +139,7 @@ app.factory( 'ClusterService', function($http) {
   var ListOfCity = []
   var ListOfCountry = []
   var ListOfYear = []
+  var CoordPredictedTempClass
 
   return {
 
@@ -149,10 +173,32 @@ app.factory( 'ClusterService', function($http) {
                   return str.join("&");
               },
               data: {"Month": Month, "Year" : Year}
-          }).success(function(data) {
+          }).success(function(data) {                  
                   
-                  temp = data.Temp_Class;		
                   Coord = data.coordinates;
+                  temp = data.Temp_Class;		
+                })
+              .error(function(data) {
+                    alert("Server has some problem. Please try after sometime.");
+                });
+        },
+
+        getCoordinateTemperaturePrediction: function(Year,Month, Longitude, Latitude)
+        {
+          $http({
+              method  : 'POST',
+              url     : 'http://127.0.0.1:5000/TemperaturePredictionForCoordinates',
+              headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+              transformRequest: function(obj) {
+                  var str = [];
+                  for(var p in obj)
+                  str.push(encodeURIComponent(p) + "=" + encodeURIComponent(obj[p]));
+                  return str.join("&");
+              },
+              data: {"Month": Month, "Year" : Year, "Longitude": Longitude, "Latitude":Latitude}
+          }).success(function(data) {                  
+                  
+                  CoordPredictedTempClass = data.pred;
                 })
               .error(function(data) {
                     alert("Server has some problem. Please try after sometime.");
@@ -160,6 +206,11 @@ app.factory( 'ClusterService', function($http) {
         },
 
          
+
+        CoordPredictedTempClass:function()
+        {
+          return CoordPredictedTempClass;
+        },
 
         temp:function()
         {
@@ -188,49 +239,6 @@ app.factory( 'ClusterService', function($http) {
                 
       };
 });
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 app.controller('RegressionDataController', function($scope, RegressionService , $timeout) {
       
@@ -306,6 +314,7 @@ app.controller('RegressionDataController', function($scope, RegressionService , 
 
     $scope.getCityAvgTempData = function()
     {      
+      console.log("Get city Avg Temp")
       RegressionService.getCityAvgTempData($scope.City, $scope.Country, $scope.Month, $scope.NumberOfYears);
     }
 
@@ -353,6 +362,7 @@ app.controller('RegressionDataController', function($scope, RegressionService , 
 
       getCityAvgTempData: function(City, Country, Month, NumberOfYears)
         {
+          console.log("send details");
           $http({
               method  : 'POST',
               url     : 'http://127.0.0.1:5000/AvgMonthTemp',
@@ -365,6 +375,7 @@ app.controller('RegressionDataController', function($scope, RegressionService , 
               },
               data: {"City": City, "Country" : Country, "Month":Month, "NumberOfYears":NumberOfYears}
           }).success(function(data) {
+                  console.log(data);
                   CityAvgTempData = data.data;
                   Coefficient = data.cofficient;
                   Intercept = data.intercept;

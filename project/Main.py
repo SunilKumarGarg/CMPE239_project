@@ -6,6 +6,7 @@ from regression import Regression
 from classification import Classification
 import numpy as np
 from numpy import newaxis
+import visualizations
 
 
 app = Flask(__name__)
@@ -43,12 +44,8 @@ def TemperatureClassificationForCoordinates():
     Returned list contains data in this format: [[list of coordinates][list of temperature class]]
     """
     try:
-        pCoordinate, pAvgTemp = dataFrame.getAvgTempForMonthYear(Month=request.form['Month'], Year=request.form['Year'])
-        print "Done1"
-        print pCoordinate
-        print pAvgTemp
+        pCoordinate, pAvgTemp = dataFrame.getAvgTempForMonthYear(Month=request.form['Month'], Year=request.form['Year'])        
         pCoordinate, TempClassification = classification.avgTempClassificationOnCoordinates(pAvgTemp, pCoordinate)
-        print "Done2"
         return dumps({"coordinates":pCoordinate, "Temp_Class":TempClassification})
     except:
         return "error"
@@ -104,7 +101,7 @@ def AvgTempForSpecifiedMonthWithRegression():
     returned data is in float.
     """ 
     try:
-
+        print request.form['City']
         temp, pList = dataFrame.getTemperature(City=request.form['City'], Country=request.form['Country'], Month=request.form['Month'], Year=request.form['Year'])      
 
         #if temp is found in database, return the temperature
@@ -148,7 +145,9 @@ if __name__ == '__main__':
     global dataFrame
     global regression
     global classification
+    visualization = visualizations.Visualization()
     dataFrame = DataParser()    
     regression = Regression()
     classification = Classification()
+    
     app.run()

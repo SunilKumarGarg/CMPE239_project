@@ -37,7 +37,7 @@ class Classification(object):
         clf = GaussianNB()
         clf.fit(feature_train, target_train)
         pre = clf.predict(feature_test)
-        pred = clf.predict([100,100])
+        pred = clf.predict([int(Latitude),int(Longitude)])
         print pred
         score = accuracy_score(target_test, pre)
         print score
