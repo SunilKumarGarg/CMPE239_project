@@ -26,7 +26,7 @@
 
 <body>
 	     <!-- Navigation -->
-        <nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+        <nav class="navbar navbar-inverse navbar-fixed-top" role="navigation" style="background-color: #00001a;">
             <!-- Brand and toggle get grouped for better mobile display -->
             <div class="navbar-header">
                 <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-ex1-collapse">
@@ -35,16 +35,17 @@
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
                 </button>
-                <a class="navbar-brand" href={{ url_for('static',filename='index.html') }}>Weather Analysis</a>
+                <!-- {{ url_for('static',filename='index.html') }} -->
+                <a class="navbar-brand" href="#index"><font size="5">Weather Analysis</font></a>
             </div>
             
             <!-- Sidebar Menu Items - These collapse to the responsive navigation menu on small screens -->
             <div class="collapse navbar-collapse navbar-ex1-collapse" style="padding-left: 0px">
-                <ul class="nav navbar-nav side-nav navbar-light bg-faded">                    
+                <ul class="nav navbar-nav side-nav navbar-light bg-faded" style="background-color: #00001a;">                    
                     <li>
-                        <a href="#Regression">Regression</a>
-                        <a href="#Clustering">Clustering</a>
-                        <a href="#Visualization">Visualization</a>
+                        <a href="#Regression"><span class="glyphicon glyphicon-asterisk">&nbsp;&nbsp;<font size="5">Regression</font></span></a>
+                        <a href="#Clustering"><span class="glyphicon glyphicon-resize-full">&nbsp;&nbsp;<font size="5">Clustering</font></span></a>
+                        <a href="#Visualization"><span class="glyphicon glyphicon-th">&nbsp;&nbsp;<font size="5">Visualizations</font></span></a>
                     </li>                                       
                 </ul>
             </div>

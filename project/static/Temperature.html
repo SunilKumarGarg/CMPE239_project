@@ -1,9 +1,9 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <style>
+<head>
+  <style>
       /* Always set the map height explicitly to define the size of the div
-       * element that contains the map. */
+      * element that contains the map. */
       #map {
         float: right;
       }
@@ -21,42 +21,49 @@
   </script>
   
   <body>
-  
-    <br>
-    <br>
-    <br>
-    <br>
-    <div>
-    <div ng-controller = 'ClusterDataController' id="map" style="width: 1000px; height: 700px;">
-      
-    </div> 
-    &nbsp;
-    &nbsp;
-    &nbsp;
-    &nbsp;
-    &nbsp;
-    &nbsp;
-    <br>
-    <br>
-    <br>
-    <div style="font-size: 19px" ng-controller="ClusterDataController">
-    <form ng-submit="getCoordinateClusterData()" ng-init="getListofCountryCity()">
-       &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <select ng-model="Year" ng-options="x for x in ListOfYear"></select>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-        <select ng-model="Month" ng-options="x for (x, y) in MonthList"></select>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-        <input class="btn btn-success" type="submit" id="submit" value="Submit" style="height:30px;width:80px"/>
-    </form>
 
-    <p><font color="#ffff80">Predicted Temperature Class: {{CoordPredictedTempClass}}</font></p> 
-    <form ng-submit="getCoordinateTemperaturePrediction()">       
-        <input ng-model="Longitude" value="Longitude"></select>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-        <input ng-model="Latitude" value="Latitude"></select>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-        <input class="btn btn-success" type="submit" id="submit" value="Submit" style="height:30px;width:80px"/>
-    </form>
+    <br>
+    <br>
+    <br>
+    <br>
+    <div style="font-size: 19px; background-color: #00001a; height: 800px;">
+    <br>
+    <br>
+      <div ng-controller = 'ClusterDataController' id="map" style="width: 1000px; height: 700px; background-color: #00001a; margin-right: 55px">
+
+      </div> 
+      &nbsp;
+      &nbsp;
+      &nbsp;
+      &nbsp;
+      &nbsp;
+      &nbsp;
+      <br>
+      <br>
+      <br>
+      <div style="font-size: 19px;" ng-controller="ClusterDataController">
+        <form ng-submit="getCoordinateClusterData()" ng-init="getListofCountryCity()">
+         &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <select ng-model="Year" ng-options="x for x in ListOfYear"></select>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+         <select ng-model="Month" ng-options="x for (x, y) in MonthList"></select>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+         <input class="btn btn-success" type="submit" id="submit" value="Submit" style="height:35px;width:90px;"/>
+       </form>
+       <br>
+       <p style="margin-left: 30px;"><font color="#ffff80">Predicted Temperature Class: {{CoordPredictedTempClass}}</font></p> 
+       <form ng-submit="getCoordinateTemperaturePrediction()">  
+
+        <p style="margin-left: 30px;"><font color="#ffff80">Longitude:</font> <input style= "margin-left: 10px;" ng-model="Longitude" value="Longitude"></select></p>    
+        
+        <p style="margin-left: 30px;"><font color="#ffff80">Lattitude:</font> <input style= "margin-left: 21px;" ng-model="Latitude" value="Latitude"></select> </p> 
+
+        <br>
+        <input class="btn btn-success" type="submit" id="submit" value="Submit" style="height:35px;width:90px; margin-left: 27px;"/>
+
+      </form>
 
     </div>
-    </div>
-  </body>
-  <script async defer
-    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBaLJJgSkTSvmJP_QTZsI0iMD_Gm_Khtc0">
-  </script>
+  </div>
+</body>
+<script async defer
+src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBaLJJgSkTSvmJP_QTZsI0iMD_Gm_Khtc0">
+</script>
 </html>

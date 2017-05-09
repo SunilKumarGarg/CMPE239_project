@@ -29,7 +29,7 @@ def Visualization():
     plt.xlabel('Year')
     plt.ylabel('Temperature')
     plt.title('Mean of temperature by years')
-    plt.savefig('project/CMPE239_project/project/static/images/temperature.png')
+    plt.savefig('temperature.png')
 
 
     indian_cities = {'Ahmadabad', 'Bangalore' , 'Bombay' , 'Kanpur', 'Lakhnau', 'Nagpur', 'Madras','Pune', 'Calcutta' , 'Surat', 'New Delhi', 'Jaipur', 'Hyderabad'}
@@ -78,7 +78,7 @@ def Visualization():
     ax.set_xlabel('Year')
     ax.set_title('Average temperature in each season for major cities in India')
     legend = plt.legend(bbox_to_anchor=(1, 0.5), frameon=True, borderpad=1, borderaxespad=0.)
-    plt.savefig('project/CMPE239_project/project/static/images/seasons.png')
+    plt.savefig('seasons.png')
     #plt.show()
 
 def get_season(month):
