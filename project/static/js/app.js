@@ -22,7 +22,7 @@ app.config(function($routeProvider){
   })
 
   .when('/Visualization',{
-    templateUrl : '/static/Visualization.html',
+    templateUrl : '/static/visualization.html',
     controller : 'RegressionDataController'
   })
   
