@@ -12,11 +12,11 @@ class Classification(object):
         AT = []
         for n in pAvgTemp:
             if n > 30:
-                AT.append('High_Temperature')
+                AT.append('High')
             elif n <= 30 and n > 10:
-                AT.append('Medium_Temperature')
+                AT.append('Medium')
             else:
-                AT.append('Cold_Temperature')
+                AT.append('Cold')
 
 
         return (pCoordinate, AT)
@@ -26,11 +26,11 @@ class Classification(object):
         AT = []
         for n in pAvgTemp:
             if n > 30:
-                AT.append('High_Temperature')
+                AT.append('High')
             elif n <= 30 and n > 10:
-                AT.append('Medium_Temperature')
+                AT.append('Medium')
             else:
-                AT.append('Cold_Temperature')
+                AT.append('Cold')
 
 
         feature_train, feature_test, target_train, target_test = train_test_split(pCoordinate, AT, test_size=0.2, random_state=42)

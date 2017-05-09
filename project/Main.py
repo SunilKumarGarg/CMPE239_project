@@ -24,32 +24,6 @@ def ListofCountryCity():
     except:
         return "error"
 
-@app.route('/TemperaturePredictionForCoordinates', methods=['POST','GET'])
-def TemperaturePredictionForCoordinates():           
-    """
-    For any longitude, Latitude, it predicts wheather temperature is hot, medium or cold.
-    Returned list contains data in this format: [[list of coordinates][list of temperature class][predicted class][score in percentage]]
-    """
-    try:
-        pCoordinate, pAvgTemp = dataFrame.getAvgTempForMonthYear(Month=request.form['Month'], Year=request.form['Year'])
-        pred, score = classification.avgTempPredectionBasedOnCoordinates(pAvgTemp, pCoordinate, request.form['Latitude'],request.form['Longitude'])
-        return dumps({"pred":pred, "score":score})
-    except:
-        return "error"
-
-@app.route('/TemperatureClassificationForCoordinates', methods=['POST','GET'])
-def TemperatureClassificationForCoordinates():           
-    """
-    For any longitude, Latitude, it predicts wheather temperature is hot, medium or cold.
-    Returned list contains data in this format: [[list of coordinates][list of temperature class]]
-    """
-    try:
-        pCoordinate, pAvgTemp = dataFrame.getAvgTempForMonthYear(Month=request.form['Month'], Year=request.form['Year'])        
-        pCoordinate, TempClassification = classification.avgTempClassificationOnCoordinates(pAvgTemp, pCoordinate)
-        return dumps({"coordinates":pCoordinate, "Temp_Class":TempClassification})
-    except:
-        return "error"
-        
 
 @app.route('/AvgMonthTemp', methods=['POST','GET'])
 def AvgMonthTemp():           
@@ -76,20 +50,30 @@ def AvgMonthTemp():
     except:
         return "error"
 
-@app.route('/AvgMonthTempWithRegression', methods=['POST','GET'])
-def AvgMonthTempWithRegression():           
+
+@app.route('/TemperaturePredictionForCoordinates', methods=['POST','GET'])
+def TemperaturePredictionForCoordinates():           
     """
-    get the list of data for specific city, country and Month
-    Data is returned as a list of list
-    Returned list contains data in this format: [ [training_x], [training_y], [test_x], [test_y], [predictLine_x], [predictLine_y]]
+    For any longitude, Latitude, it predicts wheather temperature is hot, medium or cold.
+    Returned list contains data in this format: [[list of coordinates][list of temperature class][predicted class][score in percentage]]
     """
     try:
-        p = dataFrame.getDataForCityCountryMonth(City=request.form['City'], Country=request.form['Country'], Month=request.form['Month'])
-        yearList, avgTempList = dataFrame.SplitYearAvgTemp( p )
-        avgTempList = np.array(avgTempList).astype(np.float)
-        yearList = np.array(yearList).astype(np.float)
-        training_x, training_y, test_x, test_y, predictLine_x, predictLine_y, cofficient, intercept = regression.fnLinearRegression1(yearList, avgTempList)
-        return dumps({"training_x":training_x, "training_y":training_y, "test_x":test_x, "test_y":test_y, "predictLine_x":predictLine_x, "predictLine_y":predictLine_y, "cofficient":cofficient, "intercept":intercept})
+        pCoordinate, pAvgTemp = dataFrame.getAvgTempForMonthYear(Month=request.form['Month'], Year=request.form['Year'])
+        pred, score = classification.avgTempPredectionBasedOnCoordinates(pAvgTemp, pCoordinate, request.form['Latitude'],request.form['Longitude'])
+        return dumps({"pred":pred, "score":score})
+    except:
+        return "error"
+
+@app.route('/TemperatureClassificationForCoordinates', methods=['POST','GET'])
+def TemperatureClassificationForCoordinates():           
+    """
+    For any longitude, Latitude, it predicts wheather temperature is hot, medium or cold.
+    Returned list contains data in this format: [[list of coordinates][list of temperature class]]
+    """
+    try:
+        pCoordinate, pAvgTemp = dataFrame.getAvgTempForMonthYear(Month=request.form['Month'], Year=request.form['Year'])        
+        pCoordinate, TempClassification = classification.avgTempClassificationOnCoordinates(pAvgTemp, pCoordinate)
+        return dumps({"coordinates":pCoordinate, "Temp_Class":TempClassification})
     except:
         return "error"
 
@@ -118,11 +102,17 @@ def AvgTempForSpecifiedMonthWithRegression():
             predictYear.append(pYear)
 
             scoreReg, PvalueReg = regression.fnLinearRegression(yearList, avgTempList, predictYear)
+            print "Linear Regression. Score = " + str(scoreReg) + " ,Predicted Temperature: " + str(PvalueReg)
             scoreIso, PvalueIso = regression.fnIsotonicRegression(yearList, avgTempList, predictYear)
+            print "Isotonic Regression. Score = " + str(scoreIso) + " ,Predicted Temperature: " + str(PvalueIso)
             scoreBR, PvalueBR =  regression.fnBayesianRidge(yearList, avgTempList, predictYear)
+            print "Bayesian Ridge Regression. Score = " + str(scoreBR) + " ,Predicted Temperature: " + str(PvalueBR)
             scoreRR, PvalueRR = regression.fnRANSACRegressor(yearList, avgTempList, predictYear)
+            print "RANSAC Regression. Score = " + str(scoreRR) + " ,Predicted Temperature: " + str(PvalueRR)
             scoreGP, PvalueGP = regression.fnGaussianProcessRegressor(yearList, avgTempList, predictYear)
+            print "GaussianProcess Regression. Score = " + str(scoreGP) + " ,Predicted Temperature: " + str(PvalueGP)
             scoreSV, PvalueSV = regression.fnSVR(yearList, avgTempList, predictYear)
+            print "SVR Regression. Score = " + str(scoreSV) + " ,Predicted Temperature: " + str(PvalueSV)
 
             score = np.array([scoreReg, scoreIso, scoreBR, scoreRR, scoreGP, scoreSV])
             pValue = np.array([PvalueReg, PvalueIso, PvalueBR, PvalueRR, PvalueGP, PvalueSV])
@@ -130,24 +120,41 @@ def AvgTempForSpecifiedMonthWithRegression():
             pValue = pValue[np.logical_not(np.isnan(pValue))]
             score = score[np.logical_not(np.isnan(pValue))]           
 
-            maxScoreIndex = np.argmax(score)
+            minScoreIndex = np.argmin(score)
 
             
 
-        return dumps({"avgTemp" : pValue[maxScoreIndex]})
+        return dumps({"avgTemp" : pValue[minScoreIndex]})
     except:
         return "error"
 
+
+@app.route('/AvgMonthTempWithRegression', methods=['POST','GET'])
+def AvgMonthTempWithRegression():           
+    """
+    get the list of data for specific city, country and Month
+    Data is returned as a list of list
+    Returned list contains data in this format: [ [training_x], [training_y], [test_x], [test_y], [predictLine_x], [predictLine_y]]
+    """
+    try:
+        p = dataFrame.getDataForCityCountryMonth(City=request.form['City'], Country=request.form['Country'], Month=request.form['Month'])
+        yearList, avgTempList = dataFrame.SplitYearAvgTemp( p )
+        avgTempList = np.array(avgTempList).astype(np.float)
+        yearList = np.array(yearList).astype(np.float)
+        training_x, training_y, test_x, test_y, predictLine_x, predictLine_y, cofficient, intercept = regression.fnLinearRegression1(yearList, avgTempList)
+        return dumps({"training_x":training_x, "training_y":training_y, "test_x":test_x, "test_y":test_y, "predictLine_x":predictLine_x, "predictLine_y":predictLine_y, "cofficient":cofficient, "intercept":intercept})
+    except:
+        return "error"
 
 
 
 if __name__ == '__main__':    
     global dataFrame
     global regression
-    global classification
-    visualization = visualizations.Visualization()
-    dataFrame = DataParser()    
+    global classification    
+    dataFrame = DataParser()
     regression = Regression()
     classification = Classification()
+    visualization = visualizations.Visualization()
     
     app.run()
